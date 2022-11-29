@@ -14,7 +14,8 @@ public class SortingController : MonoBehaviour
     [SerializeField] private float sampleFailCap = 0.004f;
     private int _sampleCount;
 
-    [Header("This does NOT chose what sorting method gets used!")]
+    [Header("Select which type of sorting method gets used.")] 
+    [SerializeField] private bool ManualSelect;
     [SerializeField] private bool InsertSort;
     [SerializeField] private bool IcbcsSort;
     [SerializeField] private bool MergeSort;
@@ -28,11 +29,44 @@ public class SortingController : MonoBehaviour
         else
             Debug.LogError("Environment is not set.");
 
-        if (TryGetComponent(out InsertSort sort)) 
-            _sorters = sort;
+        if (ManualSelect)
+        {
+            if (InsertSort)
+            {
+                if (TryGetComponent(out InsertSort sort)) 
+                    _sorters = sort;
+                else
+                    Debug.LogWarning("_sorters not set to an instance of an object in SortingController!");
+            }
+            else if (IcbcsSort)
+            {
+                if (TryGetComponent(out IcbcsSort sort)) 
+                    _sorters = sort;
+                else
+                    Debug.LogWarning("_sorters not set to an instance of an object in SortingController!");
+            }
+            else if (MergeSort)
+            {
+                if (TryGetComponent(out MergeSort sort)) 
+                    _sorters = sort;
+                else
+                    Debug.LogWarning("_sorters not set to an instance of an object in SortingController!");
+            }
+            else
+            {
+                Debug.LogError("Manual selection mode enabled but no sorting method chosen!");
+            }
+        }
         else
-            Debug.LogWarning("_sorters not set to an instance of an object in SortingController!");
-        InsertSort = true;
+        {
+            if (TryGetComponent(out InsertSort sort)) 
+                        _sorters = sort;
+            else
+                Debug.LogWarning("_sorters not set to an instance of an object in SortingController!");
+            InsertSort = true;
+        }
+        
+        
         
         _performanceRecorder = GetComponent<PerformanceRecorder>();
     }
@@ -56,6 +90,13 @@ public class SortingController : MonoBehaviour
             _breakOperation = false;
             _sampleCount = 0;
             _environment.FullEnvironmentReset();
+            
+            if (ManualSelect) // If we have enabled manual mode we don't want to change the mode of sorting. Instead we want to end it.
+            {
+                _breakOperation = true;
+                return;
+            }
+            
             if (_sorters is InsertSort)
             {
                 // Currently only for testing. Doesn't change anything.
@@ -76,7 +117,7 @@ public class SortingController : MonoBehaviour
                 if (TryGetComponent(out MergeSort sort))
                     _sorters = sort;
             }
-            else // TODO: Implement the last sorting method in between with an if-else.
+            else
             {
                 _breakOperation = true; 
                 Debug.Log("Test ended.");

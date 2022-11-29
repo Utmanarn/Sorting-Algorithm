@@ -575,6 +575,7 @@ MonoBehaviour:
   amountOfBallsToAddPerIteration: 100
   sampleMax: 400
   sampleFailCap: 1
+  ManualSelect: 0
   InsertSort: 0
   IcbcsSort: 0
   MergeSort: 0
