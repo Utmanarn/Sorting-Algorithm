@@ -6,7 +6,6 @@ using UnityEngine.Profiling;
 public class PerformanceRecorder : MonoBehaviour
 {
     private ExperimentEnvironmentSetup _environment;
-    private CSVWriter _csv;
     private Recorder _recorder;
     private float _elapsedMilliSec;
     private List<float> _elapsedMilisecondsList;
@@ -17,7 +16,6 @@ public class PerformanceRecorder : MonoBehaviour
     private void Start()
     {
         _environment = GetComponent<ExperimentEnvironmentSetup>();
-        _csv = GetComponent<CSVWriter>();
         _elapsedMilisecondsList = new List<float>();
     }
 
@@ -45,8 +43,6 @@ public class PerformanceRecorder : MonoBehaviour
             _elapsedMilisecondsList.Add(_elapsedMilliSec);
             AverageMilliSec();
             PrintElapsedTimeForSorter();
-
-            _csv.WriteToCSV(_sorterType, _environment.ballSpawnAmount , _elapsedMilliSec);
         }
         else
             Debug.LogWarning("Recorder is invalid.");

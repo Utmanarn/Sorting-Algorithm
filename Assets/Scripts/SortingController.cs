@@ -5,22 +5,37 @@ using UnityEngine.Profiling;
 public class SortingController : MonoBehaviour
 {
     private ExperimentEnvironmentSetup _environment;
+    private CSVWriter _csv;
+
+    private bool _stopWriting;
     
     private Sorters _sorters; // Currently only set at start! --- THIS WILL GIVE ME BIG PAIN LATER! ---
     private PerformanceRecorder _performanceRecorder;
+    private List<int> _ballCount;
+    private List<float> _insertSortAverageData;
+    private List<float> _icbcsSortAverageData;
+    private List<float> _mergetSortAverageData;
 
     [SerializeField] private int amountOfBallsToAddPerIteration = 100;
     [SerializeField] private int sampleMax = 400;
     [SerializeField] private float sampleFailCap = 0.004f;
     private int _sampleCount;
 
-    [Header("Select which type of sorting method gets used.")] 
+    [Header("Select which type of sorting method gets used.")]
     [SerializeField] private bool ManualSelect;
     [SerializeField] private bool InsertSort;
     [SerializeField] private bool IcbcsSort;
     [SerializeField] private bool MergeSort;
 
     private bool _breakOperation;
+
+    private void OnValidate()
+    {
+        if (sampleFailCap <= 0)
+        {
+            Debug.LogError("SampleFailCap set to 0 or less! SampleFailCap has to be greater than 0.");
+        }
+    }
 
     void Start()
     {
@@ -29,6 +44,13 @@ public class SortingController : MonoBehaviour
         else
             Debug.LogError("Environment is not set.");
 
+        if (TryGetComponent(out CSVWriter csvWriter))
+        {
+            _csv = csvWriter;
+        }
+        
+        _ballCount = new List<int>();
+            
         if (ManualSelect)
         {
             if (InsertSort)
@@ -37,6 +59,7 @@ public class SortingController : MonoBehaviour
                     _sorters = sort;
                 else
                     Debug.LogWarning("_sorters not set to an instance of an object in SortingController!");
+                _insertSortAverageData = new List<float>();
             }
             else if (IcbcsSort)
             {
@@ -44,6 +67,7 @@ public class SortingController : MonoBehaviour
                     _sorters = sort;
                 else
                     Debug.LogWarning("_sorters not set to an instance of an object in SortingController!");
+                _icbcsSortAverageData = new List<float>();
             }
             else if (MergeSort)
             {
@@ -51,6 +75,7 @@ public class SortingController : MonoBehaviour
                     _sorters = sort;
                 else
                     Debug.LogWarning("_sorters not set to an instance of an object in SortingController!");
+                _mergetSortAverageData = new List<float>();
             }
             else
             {
@@ -64,9 +89,10 @@ public class SortingController : MonoBehaviour
             else
                 Debug.LogWarning("_sorters not set to an instance of an object in SortingController!");
             InsertSort = true;
+            _insertSortAverageData = new List<float>();
+            _icbcsSortAverageData = new List<float>();
+            _mergetSortAverageData = new List<float>();
         }
-        
-        
         
         _performanceRecorder = GetComponent<PerformanceRecorder>();
     }
@@ -94,33 +120,34 @@ public class SortingController : MonoBehaviour
             if (ManualSelect) // If we have enabled manual mode we don't want to change the mode of sorting. Instead we want to end it.
             {
                 _breakOperation = true;
+                Debug.Log("Test ended.");
                 return;
             }
             
             if (_sorters is InsertSort)
             {
-                // Currently only for testing. Doesn't change anything.
                 InsertSort = false;
                 IcbcsSort = true;
                 MergeSort = false;
-                // ---------------------------------------------------
                 if (TryGetComponent(out IcbcsSort sort))
                     _sorters = sort;
             }
             else if (_sorters is IcbcsSort)
             {
-                // Currently only for testing. Doesn't change anything.
                 InsertSort = false;
                 IcbcsSort = false;
                 MergeSort = true;
-                // ---------------------------------------------------
                 if (TryGetComponent(out MergeSort sort))
                     _sorters = sort;
             }
             else
             {
-                _breakOperation = true; 
+                _breakOperation = true;
                 Debug.Log("Test ended.");
+                if (!_stopWriting)
+                {
+                    WriteResultsToCSV();
+                }
             }
         }
     }
@@ -151,6 +178,24 @@ public class SortingController : MonoBehaviour
 
     private void ResetForNewSamples()
     {
+        if (!_ballCount.Contains(_environment.ballSpawnAmount))
+        {
+            _ballCount.Add(_environment.ballSpawnAmount);
+        }
+        
+        if (InsertSort)
+        {
+            _insertSortAverageData.Add(_performanceRecorder.averageTimeForCurrentSample);
+        }
+        else if (IcbcsSort)
+        {
+            _icbcsSortAverageData.Add(_performanceRecorder.averageTimeForCurrentSample);
+        }
+        else if (MergeSort)
+        {
+            _mergetSortAverageData.Add(_performanceRecorder.averageTimeForCurrentSample);
+        }
+
         _environment.ballSpawnAmount += amountOfBallsToAddPerIteration;
         _environment.ResetEnvironment(); // TODO: Implement a reset function.
         _performanceRecorder.ClearAverageList(); // Clear the average list for new samples.
@@ -175,21 +220,9 @@ public class SortingController : MonoBehaviour
         }
     }
 
-    private void ShowResults()
+    private void WriteResultsToCSV()
     {
-        /* TODO: Fix this to take in the right list.
-        if (_sorters)
-        {
-            float[] array;
-            
-            array = _sorters.GetResults().ToArray();
-
-            for (int i = 0; i < array.Length; i++)
-            {
-                print("Array position " + i + " contains the number: " + array[i]);
-            }
-        }
-        */
-        
+        _csv.WriteToCSV(_ballCount, _insertSortAverageData, _icbcsSortAverageData, _mergetSortAverageData);
+        _stopWriting = true;
     }
 }

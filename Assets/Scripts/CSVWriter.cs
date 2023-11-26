@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
 
@@ -14,15 +15,47 @@ public class CSVWriter : MonoBehaviour
 
     private void CreateCSV()
     {
-        TextWriter writer = new StreamWriter(_filePath, false);
-        writer.WriteLine("Algorithm.Ball Count.Execution Time");
-        writer.Close();
+        using (StreamWriter streamWriter = new StreamWriter(_filePath, false))
+        {
+            streamWriter.WriteLine("BallCount; InsertSort; ICBCSSort; MergeSort");
+            streamWriter.Close();
+        }
     }
 
-    public void WriteToCSV(string sortType, float ballCount, float sampleData)
+    public void WriteToCSV(List<int> ballCount, List<float> insertSort, List<float> icbcsSort, List<float> mergeSort)
     {
-        TextWriter writer = new StreamWriter(_filePath, true);
-        writer.WriteLine(sortType + "." + ballCount + "." + sampleData);
-        writer.Close();
+        using (StreamWriter streamWriter = new StreamWriter(_filePath, true))
+        {
+            for (int i = 0; i < ballCount.Count; i++)
+            {
+                streamWriter.Write(ballCount[i] + "; ");
+                if (insertSort.Count > i)
+                {
+                    streamWriter.Write(insertSort[i] + "; ");
+                }
+                else
+                {
+                    streamWriter.Write("0" + "; ");
+                }
+                if (icbcsSort.Count > i)
+                {
+                    streamWriter.Write(icbcsSort[i] + "; ");
+                }
+                else
+                {
+                    streamWriter.Write("0" + "; ");
+                }
+                if (mergeSort.Count > i)
+                {
+                    streamWriter.WriteLine(mergeSort[i]);
+                }
+                else
+                {
+                    streamWriter.WriteLine("0");
+                }            
+            }
+            
+            streamWriter.Close();
+        }
     }
 }
