@@ -5,7 +5,6 @@ using UnityEngine.Profiling;
 
 public class PerformanceRecorder : MonoBehaviour
 {
-    private ExperimentEnvironmentSetup _environment;
     private Recorder _recorder;
     private float _elapsedMilliSec;
     private List<float> _elapsedMilisecondsList;
@@ -15,7 +14,6 @@ public class PerformanceRecorder : MonoBehaviour
 
     private void Start()
     {
-        _environment = GetComponent<ExperimentEnvironmentSetup>();
         _elapsedMilisecondsList = new List<float>();
     }
 

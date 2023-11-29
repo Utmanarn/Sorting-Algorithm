@@ -574,7 +574,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   amountOfBallsToAddPerIteration: 100
   sampleMax: 400
-  sampleFailCap: 1
+  sampleFailCap: 3
   ManualSelect: 0
   InsertSort: 0
   IcbcsSort: 0

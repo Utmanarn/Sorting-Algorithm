@@ -17,7 +17,7 @@ public class CSVWriter : MonoBehaviour
     {
         using (StreamWriter streamWriter = new StreamWriter(_filePath, false))
         {
-            streamWriter.WriteLine("BallCount; InsertSort; ICBCSSort; MergeSort");
+            streamWriter.WriteLine("BallCount; InsertSort; ICBCS; MergeSort");
             streamWriter.Close();
         }
     }

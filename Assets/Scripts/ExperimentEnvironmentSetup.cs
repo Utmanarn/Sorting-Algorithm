@@ -59,7 +59,6 @@ public class ExperimentEnvironmentSetup : MonoBehaviour
 
     public void ResetEnvironment()
     {
-        // TODO: Implement a function that clears the balls from the Balls list and deletes after all the balls have been deleted in the scene.
         foreach (var ball in Balls)
         {
             Destroy(ball.gameObject);
