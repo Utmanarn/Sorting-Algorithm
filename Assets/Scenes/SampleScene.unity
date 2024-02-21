@@ -477,7 +477,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 5
+  orthographic size: 5.7276263
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -544,7 +544,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ball: {fileID: 1056801220764364828, guid: dab3b8f4cbd92394cb618f31756ae5a6, type: 3}
-  ballSpawnAmount: 100
+  ballSpawnAmount: 0
 --- !u!4 &537415825
 Transform:
   m_ObjectHideFlags: 0
@@ -572,7 +572,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8b290ca376c87ec47b297ce5a630ceac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  amountOfBallsToAddPerIteration: 100
+  amountOfBallsToAddPerIteration: 25
   sampleMax: 400
   sampleFailCap: 3
   ManualSelect: 0
